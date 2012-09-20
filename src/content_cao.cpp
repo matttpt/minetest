@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/mathconstants.h"
 #include "map.h"
+#include "particle.h"
 #include <IMeshManipulator.h>
 
 class Settings;
@@ -1212,4 +1213,77 @@ public:
 // Prototype
 GenericCAO proto_GenericCAO(NULL, NULL);
 
+/*
+	ParticleEmitterCAO
+*/
+class ParticleEmitterCAO : public ClientActiveObject
+{
+private:
+	v3f m_pos;
+	u8 m_emitter_type;
+	ParticleEmitterDef m_def;
+	std::string m_extradata;
+	ParticleEmitter * m_emitter;
+public:
+	ParticleEmitterCAO(IGameDef * gamedef, ClientEnvironment * env);
+	virtual ~ParticleEmitterCAO() { if(m_emitter) delete m_emitter; }
 
+	u8 getType() const { return ACTIVEOBJECT_TYPE_PARTICLE_EMITTER; }
+	
+	static ClientActiveObject * create(IGameDef * gamedef, ClientEnvironment * env);
+	void initialize(const std::string & data);
+
+	void addToScene(scene::ISceneManager * smgr, ITextureSource * tsrc,
+			IrrlichtDevice * irr);
+	void removeFromScene();
+	v3f getPosition() { return m_pos; }
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition() { return v3s16(m_pos.X, m_pos.Y, m_pos.Z); }
+
+	void step(float dtime, ClientEnvironment * env) { }
+	void processMessage(const std::string & data) { }
+};
+
+ParticleEmitterCAO::ParticleEmitterCAO(IGameDef * gamedef, ClientEnvironment * env) :
+	ClientActiveObject(0, gamedef, env),
+	m_pos(0, 0, 0),
+	m_emitter(NULL)
+{
+	if(!gamedef && !env)
+		ClientActiveObject::registerType(getType(), &create);
+}
+
+ClientActiveObject * ParticleEmitterCAO::create(IGameDef * gamedef, ClientEnvironment * env)
+{
+	return new ParticleEmitterCAO(gamedef, env);
+}
+
+void ParticleEmitterCAO::initialize(const std::string & data)
+{
+	std::istringstream is(data, std::ios::binary);
+	m_pos = readV3F1000(is);
+	m_emitter_type = readU8(is);
+	ParticleEmitterDef::deserialize(is, m_def);
+	m_extradata = deSerializeLongString(is);
+}
+
+void ParticleEmitterCAO::addToScene(scene::ISceneManager * smgr, ITextureSource * tsrc,
+	IrrlichtDevice * irr)
+{
+	m_emitter = ParticleEmitter::create(m_emitter_type, m_pos, m_def, m_extradata, smgr, tsrc);
+}
+
+void ParticleEmitterCAO::removeFromScene()
+{
+	if(m_emitter)
+		delete m_emitter;
+	m_emitter = NULL;
+}
+
+void ParticleEmitterCAO::updateLight(u8 light_at_pos)
+{
+	m_emitter->updateLight(light_at_pos);
+}
+
+// Prototype
+ParticleEmitterCAO proto_ParticleEmitterCAO(NULL, NULL);

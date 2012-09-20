@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "scriptapi.h"
 #include "genericobject.h"
+#include "particle.h"
 #include "util/serialize.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
@@ -1142,3 +1143,53 @@ std::string PlayerSAO::getPropertyPacket()
 	return gob_cmd_set_properties(m_prop);
 }
 
+/*
+	ParticleEmitterSAO
+*/
+
+ParticleEmitterSAO::ParticleEmitterSAO(ServerEnvironment * env, v3f pos, u8 type,
+		const ParticleEmitterDef & def, const std::string & extradata) :
+	ServerActiveObject(env, pos),
+	m_emitter_type(type),
+	m_def(def),
+	m_extradata(extradata)
+{
+	if(env == NULL) // we are registering this type for deserialization
+		ServerActiveObject::registerType(getType(), &create);
+}
+
+ServerActiveObject * ParticleEmitterSAO::create(ServerEnvironment * env, v3f pos,
+		const std::string & data)
+{
+	u8 type;
+	ParticleEmitterDef def;
+	std::string extradata;
+	assert(data != "");
+	
+	std::istringstream is(data, std::ios::binary);
+	type = readU8(is);
+	ParticleEmitterDef::deserialize(is, def);
+	extradata = deSerializeLongString(is);
+	return new ParticleEmitterSAO(env, pos, type, def, extradata);
+}
+
+std::string ParticleEmitterSAO::getStaticData()
+{
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, m_emitter_type);
+	m_def.serialize(os);
+	os << serializeLongString(m_extradata);
+	return os.str();
+}
+
+std::string ParticleEmitterSAO::getClientInitializationData()
+{
+	std::ostringstream os(std::ios::binary);
+	writeV3F1000(os, getBasePosition());
+	os << getStaticData();
+	return os.str();
+}
+
+// Register SAO
+ParticleEmitterSAO proto_ParticleEmitterSAO(NULL, v3f(0,0,0),
+		PARTICLE_EMITTER_TYPE_NONE, ParticleEmitterDef(), "");

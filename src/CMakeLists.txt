@@ -153,6 +153,7 @@ configure_file(
 )
 
 set(common_SRCS
+	particle.cpp
 	rollback_interface.cpp
 	rollback.cpp
 	genericobject.cpp

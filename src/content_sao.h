@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "player.h"
 #include "object_properties.h"
+#include "particle.h"
 
 ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
 		const std::string itemstring);
@@ -241,6 +242,26 @@ public:
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
 	bool m_wielded_item_not_sent;
+};
+
+/*
+	ParticleEmitterSAO
+*/
+
+class ParticleEmitterSAO : public ServerActiveObject
+{
+private:
+	u8 m_emitter_type;
+	ParticleEmitterDef m_def;
+	std::string m_extradata;
+public:
+	ParticleEmitterSAO(ServerEnvironment * env, v3f pos, u8 type,
+		const ParticleEmitterDef & def, const std::string & extradata);
+	static ServerActiveObject * create(ServerEnvironment * env, v3f pos,
+		const std::string & data);
+	u8 getType() const { return ACTIVEOBJECT_TYPE_PARTICLE_EMITTER; }
+	std::string getClientInitializationData();
+	std::string getStaticData();
 };
 
 #endif
