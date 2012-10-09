@@ -1238,7 +1238,7 @@ public:
 	void removeFromScene();
 	v3f getPosition() { return m_pos; }
 	void updateLight(u8 light_at_pos);
-	v3s16 getLightPosition() { return v3s16(m_pos.X, m_pos.Y, m_pos.Z); }
+	v3s16 getLightPosition() { return floatToInt(m_pos, BS); }
 
 	void step(float dtime, ClientEnvironment * env) { }
 	void processMessage(const std::string & data) { }

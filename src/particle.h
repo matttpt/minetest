@@ -40,13 +40,13 @@ struct ParticleEmitterDef
 {
 	core::vector3df    direction;                  // particle direction
 	u32                minParticlesPerSec;         // minimum particles emitted per second
-	u32                maxParticlesPerSec;         // maximum partices emitted per second
+	u32                maxParticlesPerSec;         // maximum particles emitted per second
 	u32                minLifeMillis;              // minimum particle lifetime in milliseconds
 	u32                maxLifeMillis;              // maximum particle lifetime in milliseconds
 	s32                maxAngleDifferenceDegrees;  // maximum difference in degress from a particles
 	                                               // actual direction and the given direction
-	core::dimension2df minSize;                    // minimum particle start size
-	core::dimension2df maxSize;                    // maximum particle start size
+	core::dimension2df minSize;                    // minimum particle start size (in Minetest-meters)
+	core::dimension2df maxSize;                    // maximum particle start size (in Minetest-meters)
 	std::string        textureName;                // texture for particles
 
 	void serialize(std::ostringstream & os);

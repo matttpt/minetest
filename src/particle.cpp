@@ -100,7 +100,7 @@ static void common_particle_emitter_setup(v3f pos,
 	const ParticleEmitterDef & def, ITextureSource * tsrc)
 {
 	// Set position and material data
-	node->setPosition(core::vector3df(pos.X * BS, pos.Y * BS, pos.Z * BS));
+	node->setPosition(pos);
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
@@ -132,7 +132,7 @@ PointParticleEmitter::PointParticleEmitter(v3f pos, const ParticleEmitterDef & d
 
 	// Create and set emitter
 	m_emitter = m_node->createPointEmitter(
-		core::vector3df(def.direction.X * BS, def.direction.Y * BS, def.direction.Z * BS),
+		def.direction,
 		def.minParticlesPerSec,
 		def.maxParticlesPerSec,
 		video::SColor(255, 255, 255, 255),
@@ -176,7 +176,7 @@ BoxParticleEmitter::BoxParticleEmitter(v3f pos, const ParticleEmitterDef & def,
 	// Create and set emitter
 	m_emitter = m_node->createBoxEmitter(
 		box,
-		core::vector3df(def.direction.X * BS, def.direction.Y * BS, def.direction.Z * BS),
+		def.direction,
 		def.minParticlesPerSec,
 		def.maxParticlesPerSec,
 		video::SColor(255, 255, 255, 255),
@@ -227,7 +227,7 @@ SphereParticleEmitter::SphereParticleEmitter(v3f pos, const ParticleEmitterDef &
 	m_emitter = m_node->createSphereEmitter(
 		core::vector3df(0, 0, 0),
 		radius,
-		core::vector3df(def.direction.X * BS, def.direction.Y * BS, def.direction.Z * BS),
+		def.direction,
 		def.minParticlesPerSec,
 		def.maxParticlesPerSec,
 		video::SColor(255, 255, 255, 255),
