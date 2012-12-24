@@ -1292,29 +1292,60 @@ struct TestSocket: public TestBase
 	void Run()
 	{
 		const int port = 30003;
-		UDPSocket socket;
-		socket.Bind(port);
 
-		const char sendbuffer[] = "hello world!";
-		socket.Send(Address(127,0,0,1,port), sendbuffer, sizeof(sendbuffer));
-
-		sleep_ms(50);
-
-		char rcvbuffer[256];
-		memset(rcvbuffer, 0, sizeof(rcvbuffer));
-		Address sender;
-		for(;;)
+		// IPv6 socket test
 		{
-			int bytes_read = socket.Receive(sender, rcvbuffer, sizeof(rcvbuffer));
-			if(bytes_read < 0)
-				break;
+			UDPSocket socket6(true);
+			socket6.Bind(port);
+
+			const char sendbuffer[] = "hello world!";
+			unsigned char addr[16] = { 0 };
+			addr[15] = 1;
+			socket6.Send(Address(addr, port), sendbuffer, sizeof(sendbuffer));
+
+			sleep_ms(50);
+
+			char rcvbuffer[256];
+			memset(rcvbuffer, 0, sizeof(rcvbuffer));
+			Address sender;
+			for(;;)
+			{
+				int bytes_read = socket6.Receive(sender, rcvbuffer, sizeof(rcvbuffer));
+				if(bytes_read < 0)
+					break;
+			}
+			//FIXME: This fails on some systems
+			UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer))==0);
+			UASSERT(memcmp(sender.getAddress6().sin6_addr.s6_addr, Address(addr, 0).getAddress6().sin6_addr.s6_addr, 16) == 0);
 		}
-		//FIXME: This fails on some systems
-		UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer))==0);
-		UASSERT(sender.getAddress() == Address(127,0,0,1, 0).getAddress());
+
+		// IPv4 socket test
+		{
+			UDPSocket socket(false);
+			socket.Bind(port);
+
+			const char sendbuffer[] = "hello world!";
+			socket.Send(Address(127,0,0,1,port), sendbuffer, sizeof(sendbuffer));
+
+			sleep_ms(50);
+
+			char rcvbuffer[256];
+			memset(rcvbuffer, 0, sizeof(rcvbuffer));
+			Address sender;
+			for(;;)
+			{
+				int bytes_read = socket.Receive(sender, rcvbuffer, sizeof(rcvbuffer));
+				if(bytes_read < 0)
+					break;
+			}
+			//FIXME: This fails on some systems
+			UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer))==0);
+			UASSERT(sender.getAddress().sin_addr.s_addr == Address(127,0,0,1, 0).getAddress().sin_addr.s_addr);
+		}
 	}
 };
 
+// TODO perhaps test with an IPv6 connection as well
 struct TestConnection: public TestBase
 {
 	void TestHelpers()
@@ -1411,12 +1442,12 @@ struct TestConnection: public TestBase
 		Handler hand_client("client");
 		
 		infostream<<"** Creating server Connection"<<std::endl;
-		con::Connection server(proto_id, 512, 5.0, &hand_server);
+		con::Connection server(proto_id, 512, 5.0, false, &hand_server);
 		server.Serve(30001);
 		
 		infostream<<"** Creating client Connection"<<std::endl;
-		con::Connection client(proto_id, 512, 5.0, &hand_client);
-
+		con::Connection client(proto_id, 512, 5.0, false, &hand_client);
+		
 		UASSERT(hand_server.count == 0);
 		UASSERT(hand_client.count == 0);
 		

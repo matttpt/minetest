@@ -993,19 +993,24 @@ void the_game(
 	infostream<<"Creating client"<<std::endl;
 	
 	MapDrawControl draw_control;
-
-	Client client(device, playername.c_str(), password, draw_control,
-			tsrc, shsrc, itemdef, nodedef, sound, &eventmgr);
-	
-	// Client acts as our GameDef
-	IGameDef *gamedef = &client;
 			
 	draw_load_screen(L"Resolving address...", driver, font);
 	Address connect_address(0,0,0,0, port);
 	try{
 		if(address == "")
+		{
 			//connect_address.Resolve("localhost");
-			connect_address.setAddress(127,0,0,1);
+			if(g_settings->getBool("enable_ipv6") && g_settings->getBool("ipv6_server"))
+			{
+				unsigned char addr_bytes[16] = { 0 };
+				addr_bytes[15] = 1;
+				connect_address.setAddress(addr_bytes);
+			}
+			else
+			{
+				connect_address.setAddress(127,0,0,1);
+			}
+		}
 		else
 			connect_address.Resolve(address.c_str());
 	}
@@ -1016,6 +1021,16 @@ void the_game(
 		// Break out of client scope
 		break;
 	}
+
+	/*
+		Create client
+	*/
+	Client client(device, playername.c_str(), password, draw_control,
+			tsrc, shsrc, itemdef, nodedef, sound, &eventmgr,
+			connect_address.isIPv6());
+
+	// Client acts as our GameDef
+	IGameDef *gamedef = &client;
 
 	/*
 		Attempt to connect to the server

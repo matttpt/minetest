@@ -161,5 +161,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");
 	settings->setDefault("remote_media", "");
+
+	// IPv6
+	settings->setDefault("enable_ipv6", "true");
+	settings->setDefault("ipv6_server", "false");
 }
 

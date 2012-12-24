@@ -104,6 +104,7 @@ enum
 	GUI_ID_TRILINEAR_CB,
 	GUI_ID_SHADERS_CB,
 	GUI_ID_PRELOAD_ITEM_VISUALS_CB,
+	GUI_ID_IPV6_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
@@ -633,6 +634,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 					GUI_ID_PRELOAD_ITEM_VISUALS_CB, wgettext("Preload item visuals"));
 		}
 
+		// IPv6 toggle
+		{
+			core::rect<s32> rect(0, 0, option_w+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20*2);
+			Environment->addCheckBox(m_data->enable_ipv6, rect, this,
+					GUI_ID_IPV6_CB, wgettext("IPv6"));
+		}
+
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
@@ -847,6 +856,12 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_PRELOAD_ITEM_VISUALS_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 		        dst->preload_item_visuals = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_IPV6_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->enable_ipv6 = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{
