@@ -52,31 +52,31 @@ GameUI::GameUI()
 void GameUI::init()
 {
 	// First line of debug text
-	m_guitext = gui::StaticText::add(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
+	m_guitext = addStaticText(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 
 	// Second line of debug text
-	m_guitext2 = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0), false,
+	m_guitext2 = addStaticText(guienv, L"", core::rect<s32>(0, 0, 0, 0), false,
 		false, guiroot);
 
 	// At the middle of the screen
 	// Object infos are shown in this
-	m_guitext_info = gui::StaticText::add(guienv, L"",
+	m_guitext_info = addStaticText(guienv, L"",
 		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5)
 			+ v2s32(100, 200), false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
-	m_guitext_status = gui::StaticText::add(guienv, L"<Status>",
+	m_guitext_status = addStaticText(guienv, L"<Status>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 	m_guitext_status->setVisible(false);
 
 	// Chat text
-	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
+	m_guitext_chat = addStaticText(guienv, L"", core::rect<s32>(0, 0, 0, 0),
 		//false, false); // Disable word wrap as of now
 		false, true, guiroot);
 
 	// Profiler text (size is updated when text is updated)
-	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
+	m_guitext_profiler = addStaticText(guienv, L"<Profiler>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 	m_guitext_profiler->setBackgroundColor(video::SColor(120, 0, 0, 0));
 	m_guitext_profiler->setVisible(false);

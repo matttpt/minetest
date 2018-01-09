@@ -149,7 +149,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 		g_fontengine->getTextHeight());
 	rect += v2s32(4, 0);
 
-	m_irr_toplefttext = gui::StaticText::add(RenderingEngine::get_gui_env(),
+	m_irr_toplefttext = addStaticText(RenderingEngine::get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 
 	//create formspecsource
@@ -559,7 +559,7 @@ void GUIEngine::updateTopLeftTextSize()
 	rect += v2s32(4, 0);
 
 	m_irr_toplefttext->remove();
-	m_irr_toplefttext = gui::StaticText::add(RenderingEngine::get_gui_env(),
+	m_irr_toplefttext = addStaticText(RenderingEngine::get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 }
 
